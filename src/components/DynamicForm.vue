@@ -36,6 +36,8 @@ import axios from 'axios'
 import type {AxiosResponse} from 'axios'
 import type {Thing} from '@/types'
 import type {Ref} from 'vue'
+import { useAuth } from '@okta/okta-vue'
+import type { CustomUserClaim, CustomUserClaims, UserClaims } from '@okta/okta-auth-js'
 
 defineProps<{
   title: string
@@ -45,9 +47,12 @@ const items: Ref<Thing[]> = ref([])
 const nameField = ref('')
 const priceField = ref(0)
 
-async function loadThings () {
+const $auth = useAuth()
+const email = ref('')
+
+async function loadThings (owner: string = '') {
   const baseUrl = import.meta.env.VITE_BACKEND_BASE_URL // 'http://localhost:8080' in dev mode
-  const endpoint = baseUrl + '/things'
+  const endpoint = baseUrl + '/things' + '?owner=' + owner
   const response: AxiosResponse = await axios.get(endpoint);
   const responseData: Thing[] = response.data;
   responseData.forEach((thing: Thing) => {
@@ -60,7 +65,8 @@ async function save () {
   const endpoint = baseUrl + '/things'
   const data: Thing = {
     name: nameField.value,
-    price: priceField.value
+    price: priceField.value,
+    owner: email.value
   }
   const response: AxiosResponse = await axios.post(endpoint, data);
   const responseData: Thing = response.data;
@@ -68,8 +74,16 @@ async function save () {
 }
 
 // Lifecycle hooks
-onMounted(() => {
-  loadThings()
+onMounted(async () => {
+  let userClaims: UserClaims<CustomUserClaims> | undefined = undefined
+  try {
+    userClaims = await $auth.getUser()
+  } catch (e) {
+    console.log('Error:', e)
+  }
+  const owner = (userClaims === undefined || userClaims.email === undefined) ? '' : userClaims.email.toString()
+  email.value = owner
+  await loadThings(owner)
 })
 </script>
 

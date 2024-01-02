@@ -1,1 +1,1 @@
-export type Thing = { id?: number, name: string, price: number }
+export type Thing = { id?: number, name: string, price: number, owner: string }
