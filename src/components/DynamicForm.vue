@@ -37,7 +37,7 @@ import type {AxiosResponse} from 'axios'
 import type {Thing} from '@/types'
 import type {Ref} from 'vue'
 import { useAuth } from '@okta/okta-vue'
-import type { CustomUserClaim, CustomUserClaims, UserClaims } from '@okta/okta-auth-js'
+import type { UserClaims } from '@okta/okta-auth-js'
 
 defineProps<{
   title: string
@@ -75,7 +75,7 @@ async function save () {
 
 // Lifecycle hooks
 onMounted(async () => {
-  let userClaims: UserClaims<CustomUserClaims> | undefined = undefined
+  let userClaims: UserClaims | undefined = undefined
   try {
     userClaims = await $auth.getUser()
   } catch (e) {

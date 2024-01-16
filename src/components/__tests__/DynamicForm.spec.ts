@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import { mount, shallowMount, flushPromises } from '@vue/test-utils'
+import { shallowMount, flushPromises } from '@vue/test-utils'
 import DynamicForm from '@/components/DynamicForm.vue'
 import type {Thing} from '@/types'
 import axios from 'axios'
@@ -8,11 +8,12 @@ import axios from 'axios'
 describe('DynamicForm', () => {
   const emptyResponse: Thing[] = []
   const twoItemResponse: Thing[] = [
-    { id: 1, name: 'Schere', price: 42 },
-    { id: 2, name: 'Messer', price: 13 }
+    { id: 1, name: 'Schere', price: 42, owner: 'arif.wider@htw-berlin.de' },
+    { id: 2, name: 'Messer', price: 13, owner: 'arif.wider@htw-berlin.de' }
   ]
 
   vi.mock('axios')
+  vi.mock('@okta/okta-vue')
 
   it('should render the title passed to it', () => {
     vi.mocked(axios, true).get.mockResolvedValueOnce({ data: emptyResponse })
